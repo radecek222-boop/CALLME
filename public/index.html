@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CALLME - Operátorská aplikace</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📞</text></svg>">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <div class="logo-icon">📞</div>
+        <span class="logo-text">CALLME</span>
+      </div>
+      <div class="status-badge">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText">Načítání...</span>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Customer List Section -->
+      <section class="customer-section">
+        <div class="section-header">
+          <h2 class="section-title">Seznam zákazníků</h2>
+          <div class="search-box">
+            <span>🔍</span>
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="Hledat zákazníka..."
+              autocomplete="off"
+            >
+          </div>
+        </div>
+        <div class="customer-list" id="customerList">
+          <div class="loading">
+            <div class="spinner"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Call Panel -->
+      <aside class="call-panel">
+        <div class="call-panel-header">
+          <h2 class="call-panel-title">Panel volání</h2>
+        </div>
+
+        <!-- No Selection State -->
+        <div class="no-selection" id="noSelectionPanel">
+          <div class="no-selection-icon">👆</div>
+          <p>Vyberte zákazníka ze seznamu pro zahájení hovoru</p>
+        </div>
+
+        <!-- Selected Customer Display -->
+        <div class="selected-customer" id="selectedCustomerPanel" style="display: none;">
+          <div class="selected-avatar" id="selectedAvatar">--</div>
+          <h3 class="selected-name" id="selectedName">-</h3>
+          <span class="selected-id" id="selectedId">-</span>
+          <div class="phone-hidden">
+            <span>🔒</span>
+            <span>Telefonní číslo je skryté</span>
+          </div>
+        </div>
+
+        <!-- Call Button -->
+        <button class="call-button initiate" id="callButton" disabled>
+          <span>📞</span> Zavolat zákazníkovi
+        </button>
+
+        <!-- Call Status -->
+        <div class="call-status" id="callStatus" style="display: none;">
+          <div class="call-status-label">Stav hovoru</div>
+          <div class="call-status-value" id="callStatusValue">-</div>
+        </div>
+
+        <!-- Call Timer -->
+        <div class="call-timer" id="callTimer" style="display: none;">00:00</div>
+
+        <!-- Customer Notes -->
+        <div class="customer-notes" id="notesSection" style="display: none;">
+          <div class="notes-title">Poznámky k zákazníkovi</div>
+          <div class="notes-content" id="customerNotes">-</div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <span>CALLME Operator v1.0.0</span>
+      <span>Operátor: <span id="operatorId">-</span></span>
+    </footer>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script>
+    // Display operator ID in footer
+    document.getElementById('operatorId').textContent = state.operatorId;
+
+    // Show notes section when customer is selected
+    const originalRenderSelected = renderSelectedCustomer;
+    renderSelectedCustomer = function(customer) {
+      originalRenderSelected(customer);
+      document.getElementById('notesSection').style.display = 'block';
+    };
+  </script>
+</body>
+</html>
