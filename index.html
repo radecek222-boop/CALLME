@@ -23,55 +23,54 @@
 
     <!-- Search -->
     <div class="search-container">
-      <input
-        type="text"
-        id="searchInput"
-        placeholder="🔍 Hledat zákazníka..."
-        autocomplete="off"
-      >
+      <input type="text" id="searchInput" placeholder="🔍 Hledat zákazníka..." autocomplete="off">
     </div>
 
     <!-- Customer List -->
-    <main class="customer-list" id="customerList">
-      <div class="loading">
-        <div class="spinner"></div>
-      </div>
-    </main>
+    <main class="customer-list" id="customerList"></main>
 
     <!-- Footer -->
     <footer class="footer">
       <span>Operátor: <span id="operatorId">-</span></span>
     </footer>
 
-    <!-- Call Overlay -->
-    <div class="overlay" id="callOverlay">
-      <div class="overlay-content">
-        <button class="close-btn" id="closeOverlay">&times;</button>
+    <!-- Modal Overlay -->
+    <div class="modal-overlay" id="modal">
+      <div class="modal">
+        <button class="modal-close" id="modalClose">&times;</button>
 
-        <div class="overlay-customer">
-          <div class="overlay-avatar" id="overlayAvatar">--</div>
-          <h2 class="overlay-name" id="overlayName">-</h2>
-          <span class="overlay-id" id="overlayId">-</span>
-          <div class="phone-hidden">
-            <span>🔒</span> Číslo skryté
-          </div>
+        <!-- Customer Info -->
+        <div class="modal-customer">
+          <div class="modal-avatar" id="modalAvatar">--</div>
+          <div class="modal-name" id="modalName">-</div>
+          <div class="modal-id" id="modalId">-</div>
+          <div class="modal-phone-hidden">🔒 Telefonní číslo skryté</div>
         </div>
 
-        <div class="overlay-notes" id="overlayNotes"></div>
+        <!-- Call Controls -->
+        <div class="call-controls" id="callControls">
+          <button class="btn-call" id="btnCall">
+            <span class="btn-icon">📞</span>
+            <span>ZAVOLAT</span>
+          </button>
+        </div>
 
-        <button class="call-button initiate" id="callButton">
-          <span>📞</span> ZAVOLAT
-        </button>
-
-        <!-- Call Status -->
-        <div class="call-status" id="callStatus" style="display: none;">
-          <div class="call-status-value" id="callStatusValue">-</div>
+        <!-- Active Call Display -->
+        <div class="call-active" id="callActive" style="display: none;">
+          <div class="call-status" id="callStatus">Vyzvání...</div>
           <div class="call-timer" id="callTimer">00:00</div>
+          <button class="btn-end" id="btnEnd">
+            <span class="btn-icon">📵</span>
+            <span>UKONČIT HOVOR</span>
+          </button>
         </div>
+
+        <!-- Notes -->
+        <div class="modal-notes" id="modalNotes"></div>
       </div>
     </div>
 
-    <!-- Toast Container -->
+    <!-- Toast -->
     <div class="toast-container" id="toastContainer"></div>
   </div>
 

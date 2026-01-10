@@ -1,38 +1,29 @@
 /**
- * CALLME - Compact Mobile-First Design
+ * CALLME - Mobile-First with Modal
  * Neon color scheme
  */
 
 :root {
-  --color-black: #0a0a0a;
-  --color-black-light: #151515;
-  --color-white: #ffffff;
-  --color-gray: #888888;
-
+  --black: #0a0a0a;
+  --black-light: #141414;
+  --white: #ffffff;
+  --gray: #666;
   --neon-cyan: #00ffff;
   --neon-pink: #ff00ff;
   --neon-green: #39ff14;
   --neon-yellow: #ffff00;
-  --color-error: #ff3131;
-
-  --glow-cyan: 0 0 10px #00ffff, 0 0 20px #00ffff;
-  --glow-pink: 0 0 10px #ff00ff, 0 0 20px #ff00ff;
-  --glow-green: 0 0 10px #39ff14, 0 0 20px #39ff14;
+  --red: #ff3131;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: var(--color-black);
-  color: var(--color-white);
+  background: var(--black);
+  color: var(--white);
   min-height: 100vh;
   min-height: 100dvh;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 .app-container {
@@ -42,16 +33,15 @@ body {
   height: 100dvh;
 }
 
-/* Header - Compact */
+/* Header */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 12px 16px;
-  background: var(--color-black-light);
+  background: var(--black-light);
   border-bottom: 1px solid var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
-  flex-shrink: 0;
+  box-shadow: 0 0 15px rgba(0,255,255,0.15);
 }
 
 .logo {
@@ -60,15 +50,13 @@ body {
   gap: 8px;
 }
 
-.logo-icon {
-  font-size: 1.25rem;
-}
+.logo-icon { font-size: 1.2rem; }
 
 .logo-text {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: var(--neon-cyan);
-  text-shadow: var(--glow-cyan);
+  text-shadow: 0 0 10px rgba(0,255,255,0.5);
   letter-spacing: 1px;
 }
 
@@ -77,7 +65,7 @@ body {
   align-items: center;
   gap: 6px;
   font-size: 0.75rem;
-  color: var(--color-gray);
+  color: var(--gray);
 }
 
 .status-dot {
@@ -85,47 +73,42 @@ body {
   height: 8px;
   border-radius: 50%;
   background: var(--neon-green);
-  box-shadow: var(--glow-green);
+  box-shadow: 0 0 8px var(--neon-green);
   animation: pulse 2s infinite;
 }
 
 .status-dot.demo {
   background: var(--neon-yellow);
-  box-shadow: 0 0 10px #ffff00;
+  box-shadow: 0 0 8px var(--neon-yellow);
 }
 
-@keyframes pulse {
-  50% { opacity: 0.5; }
-}
+@keyframes pulse { 50% { opacity: 0.5; } }
 
-/* Search - Compact */
+/* Search */
 .search-container {
   padding: 12px 16px;
-  background: var(--color-black-light);
-  flex-shrink: 0;
+  background: var(--black-light);
 }
 
 .search-container input {
   width: 100%;
   padding: 10px 14px;
-  background: var(--color-black);
-  border: 1px solid rgba(255,255,255,0.15);
+  background: var(--black);
+  border: 1px solid rgba(255,255,255,0.1);
   border-radius: 8px;
-  color: var(--color-white);
+  color: var(--white);
   font-size: 0.9rem;
   outline: none;
 }
 
 .search-container input:focus {
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+  box-shadow: 0 0 10px rgba(0,255,255,0.2);
 }
 
-.search-container input::placeholder {
-  color: var(--color-gray);
-}
+.search-container input::placeholder { color: var(--gray); }
 
-/* Customer List - Compact */
+/* Customer List */
 .customer-list {
   flex: 1;
   overflow-y: auto;
@@ -140,44 +123,39 @@ body {
   align-items: center;
   gap: 12px;
   padding: 12px;
-  background: var(--color-black-light);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: var(--black-light);
+  border: 1px solid rgba(255,255,255,0.06);
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.15s;
 }
 
-.customer-card:active {
-  transform: scale(0.98);
-}
+.customer-card:active { transform: scale(0.98); }
 
 .customer-card:hover {
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 15px rgba(0, 255, 255, 0.15);
+  box-shadow: 0 0 12px rgba(0,255,255,0.15);
 }
 
 .customer-avatar {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  background: var(--color-black);
+  background: var(--black);
   border: 2px solid var(--neon-cyan);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--neon-cyan);
   flex-shrink: 0;
 }
 
-.customer-info {
-  flex: 1;
-  min-width: 0;
-}
+.customer-info { flex: 1; min-width: 0; }
 
 .customer-name {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
@@ -193,170 +171,143 @@ body {
 .customer-status {
   padding: 3px 8px;
   border-radius: 4px;
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  flex-shrink: 0;
 }
 
-.customer-status.active {
-  border: 1px solid var(--neon-green);
-  color: var(--neon-green);
-}
+.customer-status.active { border: 1px solid var(--neon-green); color: var(--neon-green); }
+.customer-status.inactive { border: 1px solid var(--red); color: var(--red); }
+.customer-status.pending { border: 1px solid var(--neon-yellow); color: var(--neon-yellow); }
 
-.customer-status.inactive {
-  border: 1px solid var(--color-error);
-  color: var(--color-error);
-}
-
-.customer-status.pending {
-  border: 1px solid var(--neon-yellow);
-  color: var(--neon-yellow);
-}
-
-/* Footer - Minimal */
+/* Footer */
 .footer {
   padding: 8px 16px;
-  background: var(--color-black-light);
+  background: var(--black-light);
   border-top: 1px solid rgba(255,255,255,0.1);
   font-size: 0.7rem;
-  color: var(--color-gray);
+  color: var(--gray);
   text-align: center;
-  flex-shrink: 0;
 }
 
-/* ============ OVERLAY ============ */
-.overlay {
+/* ============ MODAL ============ */
+.modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(0,0,0,0.9);
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
   z-index: 1000;
   opacity: 0;
   visibility: hidden;
-  transition: all 0.25s;
+  transition: all 0.2s;
+  padding: 16px;
 }
 
-.overlay.active {
+.modal-overlay.active {
   opacity: 1;
   visibility: visible;
 }
 
-.overlay-content {
+.modal {
   width: 100%;
-  max-width: 400px;
-  max-height: 85vh;
-  background: var(--color-black-light);
-  border-radius: 20px 20px 0 0;
-  padding: 20px;
+  max-width: 340px;
+  background: var(--black-light);
+  border-radius: 16px;
+  padding: 24px 20px;
   position: relative;
-  transform: translateY(100%);
-  transition: transform 0.3s ease-out;
   border: 1px solid var(--neon-pink);
-  border-bottom: none;
-  box-shadow: 0 -5px 30px rgba(255, 0, 255, 0.2);
+  box-shadow: 0 0 30px rgba(255,0,255,0.2);
+  transform: scale(0.9);
+  transition: transform 0.2s;
 }
 
-.overlay.active .overlay-content {
-  transform: translateY(0);
+.modal-overlay.active .modal {
+  transform: scale(1);
 }
 
-.close-btn {
+.modal-close {
   position: absolute;
   top: 12px;
-  right: 16px;
-  width: 32px;
-  height: 32px;
+  right: 12px;
+  width: 30px;
+  height: 30px;
   background: transparent;
-  border: 1px solid var(--color-gray);
+  border: 1px solid var(--gray);
   border-radius: 50%;
-  color: var(--color-white);
-  font-size: 1.25rem;
+  color: var(--white);
+  font-size: 1.2rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  line-height: 1;
 }
 
-.close-btn:hover {
+.modal-close:hover {
   border-color: var(--neon-pink);
   color: var(--neon-pink);
 }
 
-.overlay-customer {
+/* Modal Customer Info */
+.modal-customer {
   text-align: center;
-  padding: 10px 0 20px;
+  margin-bottom: 20px;
 }
 
-.overlay-avatar {
-  width: 70px;
-  height: 70px;
+.modal-avatar {
+  width: 64px;
+  height: 64px;
   margin: 0 auto 12px;
   border-radius: 50%;
-  background: var(--color-black);
+  background: var(--black);
   border: 3px solid var(--neon-cyan);
-  box-shadow: var(--glow-cyan);
+  box-shadow: 0 0 15px rgba(0,255,255,0.4);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: var(--neon-cyan);
 }
 
-.overlay-name {
-  font-size: 1.35rem;
+.modal-name {
+  font-size: 1.3rem;
   font-weight: 600;
   margin-bottom: 4px;
 }
 
-.overlay-id {
+.modal-id {
   font-size: 0.8rem;
   color: var(--neon-green);
   font-family: monospace;
-  text-shadow: 0 0 5px rgba(57, 255, 20, 0.4);
+  margin-bottom: 8px;
 }
 
-.phone-hidden {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 10px;
-  padding: 6px 12px;
-  background: rgba(255, 0, 255, 0.1);
+.modal-phone-hidden {
+  display: inline-block;
+  padding: 4px 10px;
+  background: rgba(255,0,255,0.1);
   border: 1px solid var(--neon-pink);
-  border-radius: 6px;
-  font-size: 0.75rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
   color: var(--neon-pink);
 }
 
-.overlay-notes {
-  padding: 12px;
-  background: var(--color-black);
-  border-radius: 8px;
-  font-size: 0.85rem;
-  color: var(--color-gray);
-  margin-bottom: 20px;
-  min-height: 40px;
-  border: 1px solid rgba(255,255,255,0.08);
+/* Call Controls - Before Call */
+.call-controls {
+  margin-bottom: 16px;
 }
 
-.overlay-notes:empty::before {
-  content: "Žádné poznámky";
-}
-
-/* Call Button */
-.call-button {
+.btn-call {
   width: 100%;
   padding: 16px;
+  background: transparent;
+  border: 2px solid var(--neon-green);
+  border-radius: 12px;
+  color: var(--neon-green);
   font-size: 1rem;
   font-weight: 700;
-  border: none;
-  border-radius: 12px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -365,79 +316,102 @@ body {
   text-transform: uppercase;
   letter-spacing: 2px;
   transition: all 0.15s;
+  box-shadow: 0 0 15px rgba(57,255,20,0.2);
 }
 
-.call-button.initiate {
-  background: transparent;
-  border: 2px solid var(--neon-green);
-  color: var(--neon-green);
-  box-shadow: 0 0 15px rgba(57, 255, 20, 0.25);
-}
-
-.call-button.initiate:hover,
-.call-button.initiate:active {
+.btn-call:hover, .btn-call:active {
   background: var(--neon-green);
-  color: var(--color-black);
-  box-shadow: var(--glow-green);
+  color: var(--black);
+  box-shadow: 0 0 25px rgba(57,255,20,0.4);
 }
 
-.call-button.end {
-  background: transparent;
-  border: 2px solid var(--color-error);
-  color: var(--color-error);
-}
-
-.call-button.end:hover,
-.call-button.end:active {
-  background: var(--color-error);
-  color: var(--color-white);
-}
-
-.call-button:disabled {
+.btn-call:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
-/* Call Status in Overlay */
-.call-status {
+.btn-icon { font-size: 1.2rem; }
+
+/* Active Call Display */
+.call-active {
   text-align: center;
-  margin-top: 16px;
-  padding: 16px;
-  background: var(--color-black);
-  border-radius: 10px;
+  padding: 20px;
+  background: var(--black);
+  border-radius: 12px;
+  margin-bottom: 16px;
 }
 
-.call-status-value {
+.call-status {
   font-size: 0.9rem;
   font-weight: 600;
   margin-bottom: 8px;
+  color: var(--neon-yellow);
 }
 
-.call-status-value.ringing {
-  color: var(--neon-yellow);
+.call-status.ringing {
   animation: blink 1s infinite;
 }
 
-.call-status-value.connected {
+.call-status.connected {
   color: var(--neon-green);
-  text-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+  text-shadow: 0 0 10px rgba(57,255,20,0.5);
+  animation: none;
 }
 
-.call-status-value.ended {
+.call-status.ended {
   color: var(--neon-pink);
+  animation: none;
 }
+
+@keyframes blink { 50% { opacity: 0.3; } }
 
 .call-timer {
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: 700;
   font-family: monospace;
   color: var(--neon-cyan);
-  text-shadow: var(--glow-cyan);
-  letter-spacing: 3px;
+  text-shadow: 0 0 15px rgba(0,255,255,0.5);
+  letter-spacing: 4px;
+  margin-bottom: 16px;
 }
 
-@keyframes blink {
-  50% { opacity: 0.3; }
+.btn-end {
+  width: 100%;
+  padding: 14px;
+  background: transparent;
+  border: 2px solid var(--red);
+  border-radius: 10px;
+  color: var(--red);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.15s;
+}
+
+.btn-end:hover, .btn-end:active {
+  background: var(--red);
+  color: var(--white);
+}
+
+/* Notes */
+.modal-notes {
+  padding: 10px 12px;
+  background: var(--black);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  color: var(--gray);
+  border: 1px solid rgba(255,255,255,0.06);
+  min-height: 36px;
+}
+
+.modal-notes:empty::before {
+  content: "Žádné poznámky";
 }
 
 /* Toast */
@@ -447,73 +421,37 @@ body {
   left: 50%;
   transform: translateX(-50%);
   z-index: 1100;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
   width: calc(100% - 32px);
-  max-width: 360px;
+  max-width: 320px;
 }
 
 .toast {
   padding: 12px 16px;
   border-radius: 8px;
-  background: var(--color-black-light);
+  background: var(--black-light);
   border: 1px solid var(--neon-cyan);
   font-size: 0.85rem;
   text-align: center;
+  margin-bottom: 8px;
   animation: toastIn 0.3s;
 }
 
 .toast.success { border-color: var(--neon-green); }
-.toast.error { border-color: var(--color-error); }
-.toast.warning { border-color: var(--neon-yellow); }
+.toast.error { border-color: var(--red); }
 
 @keyframes toastIn {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Loading */
-.loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px;
-}
-
-.spinner {
-  width: 32px;
-  height: 32px;
-  border: 3px solid rgba(0, 255, 255, 0.2);
-  border-top-color: var(--neon-cyan);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* Desktop adjustments */
+/* Responsive */
 @media (min-width: 600px) {
   .customer-list {
     padding: 16px;
     gap: 8px;
   }
-
-  .customer-card {
-    padding: 14px 16px;
-  }
-
-  .overlay-content {
-    border-radius: 20px;
-    margin-bottom: 20px;
-    border: 1px solid var(--neon-pink);
-  }
-
-  .overlay {
-    align-items: center;
-  }
+  .customer-card { padding: 14px 16px; }
+  .modal { max-width: 380px; padding: 28px 24px; }
 }
 
 @media (min-width: 900px) {
@@ -526,7 +464,7 @@ body {
 @media (min-width: 1200px) {
   .customer-list {
     grid-template-columns: repeat(3, 1fr);
-    max-width: 1200px;
+    max-width: 1100px;
     margin: 0 auto;
   }
 }
