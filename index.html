@@ -31,10 +31,10 @@
 
     <!-- Footer -->
     <footer class="footer">
-      <span>Operátor: <span id="operatorId">-</span></span>
+      <span id="operatorId">Operátor č.1</span>
     </footer>
 
-    <!-- Modal Overlay -->
+    <!-- Modal -->
     <div class="modal-overlay" id="modal">
       <div class="modal">
         <button class="modal-close" id="modalClose">&times;</button>
@@ -47,6 +47,12 @@
           <div class="modal-phone-hidden">🔒 Telefonní číslo skryté</div>
         </div>
 
+        <!-- Call History -->
+        <div class="call-history-section">
+          <div class="history-title">Historie volání</div>
+          <div class="call-history" id="callHistory"></div>
+        </div>
+
         <!-- Call Controls -->
         <div class="call-controls" id="callControls">
           <button class="btn-call" id="btnCall">
@@ -55,7 +61,7 @@
           </button>
         </div>
 
-        <!-- Active Call Display -->
+        <!-- Active Call -->
         <div class="call-active" id="callActive" style="display: none;">
           <div class="call-status" id="callStatus">Vyzvání...</div>
           <div class="call-timer" id="callTimer">00:00</div>
