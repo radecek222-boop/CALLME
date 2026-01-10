@@ -467,6 +467,7 @@ body {
   font-family: monospace;
   color: var(--color-gold);
   margin-top: var(--spacing-md);
+  text-align: center;
 }
 
 /* Customer Notes */

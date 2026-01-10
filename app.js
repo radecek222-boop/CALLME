@@ -1,80 +1,126 @@
 /**
  * CALLME - Operator Call Center Application
- * Frontend JavaScript
+ * Static version for GitHub Pages (demo mode)
  */
+
+// Mock Customer Database (phone numbers hidden - never exposed)
+const customers = [
+  {
+    id: "CUST-001",
+    name: "Jan Novák",
+    email: "jan.novak@email.cz",
+    status: "active",
+    lastContact: "2025-12-15",
+    notes: "Preferuje volání v odpoledních hodinách"
+  },
+  {
+    id: "CUST-002",
+    name: "Marie Svobodová",
+    email: "marie.s@email.cz",
+    status: "active",
+    lastContact: "2025-12-10",
+    notes: "VIP zákazník"
+  },
+  {
+    id: "CUST-003",
+    name: "Petr Dvořák",
+    email: "petr.dvorak@email.cz",
+    status: "inactive",
+    lastContact: "2025-11-20",
+    notes: ""
+  },
+  {
+    id: "CUST-004",
+    name: "Eva Černá",
+    email: "eva.cerna@email.cz",
+    status: "active",
+    lastContact: "2025-12-18",
+    notes: "Zájem o prémiové služby"
+  },
+  {
+    id: "CUST-005",
+    name: "Tomáš Procházka",
+    email: "tomas.p@email.cz",
+    status: "active",
+    lastContact: "2025-12-12",
+    notes: ""
+  },
+  {
+    id: "CUST-006",
+    name: "Lucie Králová",
+    email: "lucie.kralova@email.cz",
+    status: "pending",
+    lastContact: "2025-12-01",
+    notes: "Čeká na zpětné volání"
+  },
+  {
+    id: "CUST-007",
+    name: "Martin Veselý",
+    email: "martin.v@email.cz",
+    status: "active",
+    lastContact: "2025-12-19",
+    notes: "Dlouhodobý zákazník"
+  },
+  {
+    id: "CUST-008",
+    name: "Kateřina Horáková",
+    email: "katerina.h@email.cz",
+    status: "active",
+    lastContact: "2025-12-17",
+    notes: ""
+  }
+];
 
 // Application State
 const state = {
-  customers: [],
+  customers: customers,
   selectedCustomer: null,
   currentCall: null,
   callTimer: null,
   callStartTime: null,
-  twilioConfigured: false,
   operatorId: `OP-${generateId()}`
 };
-
-// DOM Elements
-const elements = {
-  customerList: document.getElementById('customerList'),
-  searchInput: document.getElementById('searchInput'),
-  selectedCustomerPanel: document.getElementById('selectedCustomerPanel'),
-  noSelectionPanel: document.getElementById('noSelectionPanel'),
-  callButton: document.getElementById('callButton'),
-  callStatus: document.getElementById('callStatus'),
-  callTimer: document.getElementById('callTimer'),
-  statusDot: document.getElementById('statusDot'),
-  statusText: document.getElementById('statusText'),
-  toastContainer: document.getElementById('toastContainer')
-};
-
-// Initialize application
-document.addEventListener('DOMContentLoaded', init);
-
-async function init() {
-  await checkTwilioStatus();
-  await loadCustomers();
-  setupEventListeners();
-}
 
 // Generate random ID
 function generateId() {
   return Math.random().toString(36).substring(2, 10).toUpperCase();
 }
 
-// Check Twilio configuration status
-async function checkTwilioStatus() {
-  try {
-    const response = await fetch('/api/twilio/status');
-    const data = await response.json();
-    state.twilioConfigured = data.configured;
+// DOM Elements
+let elements = {};
 
-    elements.statusDot.classList.toggle('demo', !data.configured);
-    elements.statusText.textContent = data.configured ? 'Online' : 'Demo Mode';
-  } catch (error) {
-    console.error('Failed to check Twilio status:', error);
-    elements.statusText.textContent = 'Offline';
-  }
-}
+// Initialize application
+document.addEventListener('DOMContentLoaded', init);
 
-// Load customers from API
-async function loadCustomers() {
-  try {
-    showLoading(true);
-    const response = await fetch('/api/customers');
-    state.customers = await response.json();
-    renderCustomerList(state.customers);
-  } catch (error) {
-    console.error('Failed to load customers:', error);
-    showToast('Nepodařilo se načíst zákazníky', 'error');
-  } finally {
-    showLoading(false);
-  }
+function init() {
+  elements = {
+    customerList: document.getElementById('customerList'),
+    searchInput: document.getElementById('searchInput'),
+    selectedCustomerPanel: document.getElementById('selectedCustomerPanel'),
+    noSelectionPanel: document.getElementById('noSelectionPanel'),
+    callButton: document.getElementById('callButton'),
+    callStatus: document.getElementById('callStatus'),
+    callTimer: document.getElementById('callTimer'),
+    statusDot: document.getElementById('statusDot'),
+    statusText: document.getElementById('statusText'),
+    toastContainer: document.getElementById('toastContainer'),
+    operatorIdDisplay: document.getElementById('operatorId')
+  };
+
+  // Set demo mode indicator
+  elements.statusDot.classList.add('demo');
+  elements.statusText.textContent = 'Demo Mode';
+  elements.operatorIdDisplay.textContent = state.operatorId;
+
+  renderCustomerList(state.customers);
+  setupEventListeners();
+
+  showToast('Aplikace běží v demo režimu', 'warning');
 }
 
 // Render customer list
-function renderCustomerList(customers) {
-  elements.customerList.innerHTML = customers.map(customer => `
+function renderCustomerList(customersList) {
+  elements.customerList.innerHTML = customersList.map(customer => `
     <div class="customer-card ${state.selectedCustomer?.id === customer.id ? 'selected' : ''}"
          data-id="${customer.id}"
          onclick="selectCustomer('${customer.id}')">
@@ -124,6 +170,7 @@ function renderSelectedCustomer(customer) {
   document.getElementById('selectedName').textContent = customer.name;
   document.getElementById('selectedId').textContent = customer.id;
   document.getElementById('customerNotes').textContent = customer.notes || 'Žádné poznámky';
+  document.getElementById('notesSection').style.display = 'block';
 
   // Reset call UI
   elements.callButton.className = 'call-button initiate';
@@ -150,100 +197,71 @@ function setupEventListeners() {
 }
 
 // Handle call button click
-async function handleCallButton() {
+function handleCallButton() {
   if (state.currentCall) {
-    await endCall();
+    endCall();
   } else {
-    await initiateCall();
+    initiateCall();
   }
 }
 
-// Initiate call to customer
-async function initiateCall() {
+// Initiate call to customer (demo mode)
+function initiateCall() {
   if (!state.selectedCustomer) {
     showToast('Vyberte zákazníka', 'warning');
     return;
   }
 
-  try {
-    elements.callButton.disabled = true;
-    elements.callButton.innerHTML = '<span class="spinner"></span> Spojuji...';
+  // Simulate call initiation
+  elements.callButton.disabled = true;
+  elements.callButton.innerHTML = '<span class="spinner"></span> Spojuji...';
 
-    const response = await fetch('/api/call/initiate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        customerId: state.selectedCustomer.id,
-        operatorId: state.operatorId
-      })
-    });
+  setTimeout(() => {
+    const demoCallSid = `DEMO-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-    const data = await response.json();
+    state.currentCall = {
+      callSid: demoCallSid,
+      customerId: state.selectedCustomer.id,
+      customerName: state.selectedCustomer.name
+    };
+    state.callStartTime = new Date();
 
-    if (data.success) {
-      state.currentCall = data;
-      state.callStartTime = new Date();
+    // Update UI for active call
+    elements.callButton.className = 'call-button end';
+    elements.callButton.innerHTML = '<span>📵</span> Ukončit hovor';
+    elements.callButton.disabled = false;
 
-      // Update UI for active call
-      elements.callButton.className = 'call-button end';
-      elements.callButton.innerHTML = '<span>📵</span> Ukončit hovor';
-      elements.callButton.disabled = false;
+    // Show call status
+    elements.callStatus.style.display = 'block';
+    updateCallStatus('ringing', 'Vyzvání...');
 
-      // Show call status
-      elements.callStatus.style.display = 'block';
-      updateCallStatus('ringing', 'Vyzvání...');
+    // Start call timer
+    startCallTimer();
 
-      // Start call timer
-      startCallTimer();
+    // Simulate connection after 2 seconds
+    setTimeout(() => {
+      if (state.currentCall) {
+        updateCallStatus('connected', 'Spojeno');
+      }
+    }, 2000);
 
-      // Simulate connection after 2 seconds (in real scenario, Twilio webhook would update this)
-      setTimeout(() => {
-        if (state.currentCall) {
-          updateCallStatus('connected', 'Spojeno');
-        }
-      }, 2000);
-
-      showToast(data.demoMode
-        ? 'Demo hovor zahájen (Twilio není nakonfigurováno)'
-        : 'Hovor zahájen', 'success');
-    } else {
-      showToast(data.error || 'Nepodařilo se zahájit hovor', 'error');
-      resetCallUI();
-    }
-  } catch (error) {
-    console.error('Call initiation failed:', error);
-    showToast('Chyba při zahajování hovoru', 'error');
-    resetCallUI();
-  }
+    showToast('Demo hovor zahájen (pro reálné volání připojte Twilio)', 'success');
+  }, 1000);
 }
 
 // End active call
-async function endCall() {
+function endCall() {
   if (!state.currentCall) return;
 
-  try {
-    const response = await fetch('/api/call/end', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ callSid: state.currentCall.callSid })
-    });
+  stopCallTimer();
+  updateCallStatus('ended', 'Hovor ukončen');
 
-    await response.json();
+  showToast('Hovor byl ukončen', 'success');
 
-    stopCallTimer();
-    updateCallStatus('ended', 'Hovor ukončen');
-
-    showToast('Hovor byl ukončen', 'success');
-
-    // Reset after showing ended status
-    setTimeout(() => {
-      resetCallUI();
-    }, 2000);
-
-  } catch (error) {
-    console.error('Failed to end call:', error);
-    showToast('Chyba při ukončování hovoru', 'error');
-  }
+  // Reset after showing ended status
+  setTimeout(() => {
+    resetCallUI();
+  }, 2000);
 }
 
 // Update call status display
@@ -290,17 +308,6 @@ function resetCallUI() {
   elements.callButton.disabled = false;
   elements.callStatus.style.display = 'none';
   elements.callTimer.style.display = 'none';
-}
-
-// Show/hide loading state
-function showLoading(show) {
-  if (show) {
-    elements.customerList.innerHTML = `
-      <div class="loading">
-        <div class="spinner"></div>
-      </div>
-    `;
-  }
 }
 
 // Show toast notification
