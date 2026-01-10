@@ -1,5 +1,5 @@
 /**
- * CALLME - Compact Mobile App with Overlay
+ * CALLME - Modal-based calling app
  */
 
 const customers = [
@@ -16,169 +16,166 @@ const customers = [
 ];
 
 const state = {
-  selectedCustomer: null,
-  currentCall: null,
-  callTimer: null,
-  callStartTime: null,
-  operatorId: `OP-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
+  customer: null,
+  call: null,
+  timer: null,
+  startTime: null,
+  operator: `OP-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
 };
 
-const statusLabels = { active: 'Aktivní', inactive: 'Neaktivní', pending: 'Čeká' };
+const statusText = { active: 'Aktivní', inactive: 'Neaktivní', pending: 'Čeká' };
 
-document.addEventListener('DOMContentLoaded', init);
-
-function init() {
-  document.getElementById('operatorId').textContent = state.operatorId;
+// Init
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('operatorId').textContent = state.operator;
   document.getElementById('statusDot').classList.add('demo');
   document.getElementById('statusText').textContent = 'Demo';
 
-  renderCustomerList(customers);
+  renderList(customers);
 
-  document.getElementById('searchInput').addEventListener('input', (e) => {
+  // Search
+  document.getElementById('searchInput').addEventListener('input', e => {
     const q = e.target.value.toLowerCase();
-    renderCustomerList(customers.filter(c =>
+    renderList(customers.filter(c =>
       c.name.toLowerCase().includes(q) || c.id.toLowerCase().includes(q)
     ));
   });
 
-  document.getElementById('closeOverlay').addEventListener('click', closeOverlay);
-  document.getElementById('callOverlay').addEventListener('click', (e) => {
-    if (e.target.id === 'callOverlay') closeOverlay();
+  // Modal close
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  document.getElementById('modal').addEventListener('click', e => {
+    if (e.target.id === 'modal') closeModal();
   });
-  document.getElementById('callButton').addEventListener('click', handleCall);
-}
 
-function renderCustomerList(list) {
+  // Call buttons
+  document.getElementById('btnCall').addEventListener('click', startCall);
+  document.getElementById('btnEnd').addEventListener('click', endCall);
+});
+
+function renderList(list) {
   document.getElementById('customerList').innerHTML = list.map(c => `
-    <div class="customer-card" onclick="openCustomer('${c.id}')">
-      <div class="customer-avatar">${getInitials(c.name)}</div>
+    <div class="customer-card" onclick="openModal('${c.id}')">
+      <div class="customer-avatar">${initials(c.name)}</div>
       <div class="customer-info">
         <div class="customer-name">${c.name}</div>
         <div class="customer-id">${c.id}</div>
       </div>
-      <span class="customer-status ${c.status}">${statusLabels[c.status]}</span>
+      <span class="customer-status ${c.status}">${statusText[c.status]}</span>
     </div>
   `).join('');
 }
 
-function getInitials(name) {
+function initials(name) {
   return name.split(' ').map(n => n[0]).join('').substring(0, 2);
 }
 
-function openCustomer(id) {
-  const customer = customers.find(c => c.id === id);
-  if (!customer) return;
+function openModal(id) {
+  const c = customers.find(x => x.id === id);
+  if (!c) return;
 
-  state.selectedCustomer = customer;
-  resetCallUI();
+  state.customer = c;
 
-  document.getElementById('overlayAvatar').textContent = getInitials(customer.name);
-  document.getElementById('overlayName').textContent = customer.name;
-  document.getElementById('overlayId').textContent = customer.id;
-  document.getElementById('overlayNotes').textContent = customer.notes || '';
+  // Fill modal
+  document.getElementById('modalAvatar').textContent = initials(c.name);
+  document.getElementById('modalName').textContent = c.name;
+  document.getElementById('modalId').textContent = c.id;
+  document.getElementById('modalNotes').textContent = c.notes || '';
 
-  document.getElementById('callOverlay').classList.add('active');
-  document.body.style.overflow = 'hidden';
+  // Reset to call state
+  document.getElementById('callControls').style.display = 'block';
+  document.getElementById('callActive').style.display = 'none';
+  document.getElementById('btnCall').disabled = false;
+
+  // Show modal
+  document.getElementById('modal').classList.add('active');
 }
 
-function closeOverlay() {
-  if (state.currentCall) {
-    if (!confirm('Probíhá hovor. Opravdu zavřít?')) return;
+function closeModal() {
+  if (state.call) {
+    if (!confirm('Probíhá hovor. Ukončit?')) return;
     endCall();
   }
-  document.getElementById('callOverlay').classList.remove('active');
-  document.body.style.overflow = '';
-  state.selectedCustomer = null;
+  document.getElementById('modal').classList.remove('active');
+  state.customer = null;
 }
 
-function handleCall() {
-  if (state.currentCall) {
-    endCall();
-  } else {
-    initiateCall();
-  }
-}
+function startCall() {
+  if (!state.customer) return;
 
-function initiateCall() {
-  if (!state.selectedCustomer) return;
-
-  const btn = document.getElementById('callButton');
+  const btn = document.getElementById('btnCall');
   btn.disabled = true;
-  btn.innerHTML = '<span class="spinner" style="width:20px;height:20px;border-width:2px;"></span>';
+  btn.innerHTML = '<span class="spinner" style="width:18px;height:18px;border:2px solid rgba(57,255,20,0.2);border-top-color:#39ff14;border-radius:50%;animation:spin 1s linear infinite;"></span>';
 
   setTimeout(() => {
-    state.currentCall = { id: `CALL-${Date.now()}` };
-    state.callStartTime = new Date();
+    state.call = true;
+    state.startTime = Date.now();
 
-    btn.className = 'call-button end';
-    btn.innerHTML = '<span>📵</span> UKONČIT';
-    btn.disabled = false;
+    // Switch UI
+    document.getElementById('callControls').style.display = 'none';
+    document.getElementById('callActive').style.display = 'block';
 
-    document.getElementById('callStatus').style.display = 'block';
-    updateCallStatus('ringing', 'Vyzvání...');
-    startTimer();
+    // Set ringing
+    const statusEl = document.getElementById('callStatus');
+    statusEl.textContent = 'Vyzvání...';
+    statusEl.className = 'call-status ringing';
 
+    // Start timer
+    updateTimer();
+    state.timer = setInterval(updateTimer, 1000);
+
+    // Simulate connect after 2s
     setTimeout(() => {
-      if (state.currentCall) updateCallStatus('connected', 'Spojeno');
+      if (state.call) {
+        statusEl.textContent = 'Spojeno';
+        statusEl.className = 'call-status connected';
+      }
     }, 2000);
 
-    showToast('Demo hovor zahájen', 'success');
-  }, 800);
+    toast('Hovor zahájen', 'success');
+  }, 600);
 }
 
 function endCall() {
-  stopTimer();
-  updateCallStatus('ended', 'Ukončeno');
-  showToast('Hovor ukončen', 'success');
-
-  setTimeout(resetCallUI, 1500);
-}
-
-function resetCallUI() {
-  state.currentCall = null;
-  state.callStartTime = null;
-  stopTimer();
-
-  const btn = document.getElementById('callButton');
-  btn.className = 'call-button initiate';
-  btn.innerHTML = '<span>📞</span> ZAVOLAT';
-  btn.disabled = false;
-
-  document.getElementById('callStatus').style.display = 'none';
-  document.getElementById('callTimer').textContent = '00:00';
-}
-
-function updateCallStatus(status, text) {
-  const el = document.getElementById('callStatusValue');
-  el.textContent = text;
-  el.className = 'call-status-value ' + status;
-}
-
-function startTimer() {
-  updateTimerDisplay();
-  state.callTimer = setInterval(updateTimerDisplay, 1000);
-}
-
-function stopTimer() {
-  if (state.callTimer) {
-    clearInterval(state.callTimer);
-    state.callTimer = null;
+  // Stop timer
+  if (state.timer) {
+    clearInterval(state.timer);
+    state.timer = null;
   }
+
+  // Update status
+  const statusEl = document.getElementById('callStatus');
+  statusEl.textContent = 'Hovor ukončen';
+  statusEl.className = 'call-status ended';
+
+  state.call = null;
+
+  toast('Hovor ukončen', 'success');
+
+  // Reset after delay
+  setTimeout(() => {
+    document.getElementById('callControls').style.display = 'block';
+    document.getElementById('callActive').style.display = 'none';
+    document.getElementById('callTimer').textContent = '00:00';
+    document.getElementById('btnCall').disabled = false;
+    document.getElementById('btnCall').innerHTML = '<span class="btn-icon">📞</span><span>ZAVOLAT</span>';
+  }, 1500);
 }
 
-function updateTimerDisplay() {
-  if (!state.callStartTime) return;
-  const s = Math.floor((Date.now() - state.callStartTime) / 1000);
+function updateTimer() {
+  if (!state.startTime) return;
+  const s = Math.floor((Date.now() - state.startTime) / 1000);
+  const m = Math.floor(s / 60);
   document.getElementById('callTimer').textContent =
-    `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+    `${String(m).padStart(2,'0')}:${String(s % 60).padStart(2,'0')}`;
 }
 
-function showToast(msg, type = 'info') {
-  const toast = document.createElement('div');
-  toast.className = `toast ${type}`;
-  toast.textContent = msg;
-  document.getElementById('toastContainer').appendChild(toast);
-  setTimeout(() => toast.remove(), 3000);
+function toast(msg, type) {
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.textContent = msg;
+  document.getElementById('toastContainer').appendChild(t);
+  setTimeout(() => t.remove(), 3000);
 }
 
-window.openCustomer = openCustomer;
+// Global
+window.openModal = openModal;
