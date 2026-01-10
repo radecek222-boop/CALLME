@@ -1,203 +1,97 @@
 /**
- * CALLME - Operator Call Center Application
- * Static version for GitHub Pages (demo mode)
+ * CALLME - Compact Mobile App with Overlay
  */
 
-// Mock Customer Database (phone numbers hidden - never exposed)
 const customers = [
-  {
-    id: "CUST-001",
-    name: "Jan Novák",
-    email: "jan.novak@email.cz",
-    status: "active",
-    lastContact: "2025-12-15",
-    notes: "Preferuje volání v odpoledních hodinách"
-  },
-  {
-    id: "CUST-002",
-    name: "Marie Svobodová",
-    email: "marie.s@email.cz",
-    status: "active",
-    lastContact: "2025-12-10",
-    notes: "VIP zákazník"
-  },
-  {
-    id: "CUST-003",
-    name: "Petr Dvořák",
-    email: "petr.dvorak@email.cz",
-    status: "inactive",
-    lastContact: "2025-11-20",
-    notes: ""
-  },
-  {
-    id: "CUST-004",
-    name: "Eva Černá",
-    email: "eva.cerna@email.cz",
-    status: "active",
-    lastContact: "2025-12-18",
-    notes: "Zájem o prémiové služby"
-  },
-  {
-    id: "CUST-005",
-    name: "Tomáš Procházka",
-    email: "tomas.p@email.cz",
-    status: "active",
-    lastContact: "2025-12-12",
-    notes: ""
-  },
-  {
-    id: "CUST-006",
-    name: "Lucie Králová",
-    email: "lucie.kralova@email.cz",
-    status: "pending",
-    lastContact: "2025-12-01",
-    notes: "Čeká na zpětné volání"
-  },
-  {
-    id: "CUST-007",
-    name: "Martin Veselý",
-    email: "martin.v@email.cz",
-    status: "active",
-    lastContact: "2025-12-19",
-    notes: "Dlouhodobý zákazník"
-  },
-  {
-    id: "CUST-008",
-    name: "Kateřina Horáková",
-    email: "katerina.h@email.cz",
-    status: "active",
-    lastContact: "2025-12-17",
-    notes: ""
-  }
+  { id: "CUST-001", name: "Jan Novák", status: "active", notes: "Preferuje odpoledne" },
+  { id: "CUST-002", name: "Marie Svobodová", status: "active", notes: "VIP zákazník" },
+  { id: "CUST-003", name: "Petr Dvořák", status: "inactive", notes: "" },
+  { id: "CUST-004", name: "Eva Černá", status: "active", notes: "Zájem o prémiové služby" },
+  { id: "CUST-005", name: "Tomáš Procházka", status: "active", notes: "" },
+  { id: "CUST-006", name: "Lucie Králová", status: "pending", notes: "Čeká na zpětné volání" },
+  { id: "CUST-007", name: "Martin Veselý", status: "active", notes: "Dlouhodobý zákazník" },
+  { id: "CUST-008", name: "Kateřina Horáková", status: "active", notes: "" },
+  { id: "CUST-009", name: "Pavel Němec", status: "active", notes: "" },
+  { id: "CUST-010", name: "Jana Veselá", status: "pending", notes: "Nový zákazník" }
 ];
 
-// Application State
 const state = {
-  customers: customers,
   selectedCustomer: null,
   currentCall: null,
   callTimer: null,
   callStartTime: null,
-  operatorId: `OP-${generateId()}`
+  operatorId: `OP-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
 };
 
-// Generate random ID
-function generateId() {
-  return Math.random().toString(36).substring(2, 10).toUpperCase();
-}
+const statusLabels = { active: 'Aktivní', inactive: 'Neaktivní', pending: 'Čeká' };
 
-// DOM Elements
-let elements = {};
-
-// Initialize application
 document.addEventListener('DOMContentLoaded', init);
 
 function init() {
-  elements = {
-    customerList: document.getElementById('customerList'),
-    searchInput: document.getElementById('searchInput'),
-    selectedCustomerPanel: document.getElementById('selectedCustomerPanel'),
-    noSelectionPanel: document.getElementById('noSelectionPanel'),
-    callButton: document.getElementById('callButton'),
-    callStatus: document.getElementById('callStatus'),
-    callTimer: document.getElementById('callTimer'),
-    statusDot: document.getElementById('statusDot'),
-    statusText: document.getElementById('statusText'),
-    toastContainer: document.getElementById('toastContainer'),
-    operatorIdDisplay: document.getElementById('operatorId')
-  };
+  document.getElementById('operatorId').textContent = state.operatorId;
+  document.getElementById('statusDot').classList.add('demo');
+  document.getElementById('statusText').textContent = 'Demo';
 
-  // Set demo mode indicator
-  elements.statusDot.classList.add('demo');
-  elements.statusText.textContent = 'Demo Mode';
-  elements.operatorIdDisplay.textContent = state.operatorId;
+  renderCustomerList(customers);
 
-  renderCustomerList(state.customers);
-  setupEventListeners();
+  document.getElementById('searchInput').addEventListener('input', (e) => {
+    const q = e.target.value.toLowerCase();
+    renderCustomerList(customers.filter(c =>
+      c.name.toLowerCase().includes(q) || c.id.toLowerCase().includes(q)
+    ));
+  });
 
-  showToast('Aplikace běží v demo režimu', 'warning');
+  document.getElementById('closeOverlay').addEventListener('click', closeOverlay);
+  document.getElementById('callOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'callOverlay') closeOverlay();
+  });
+  document.getElementById('callButton').addEventListener('click', handleCall);
 }
 
-// Render customer list
-function renderCustomerList(customersList) {
-  elements.customerList.innerHTML = customersList.map(customer => `
-    <div class="customer-card ${state.selectedCustomer?.id === customer.id ? 'selected' : ''}"
-         data-id="${customer.id}"
-         onclick="selectCustomer('${customer.id}')">
+function renderCustomerList(list) {
+  document.getElementById('customerList').innerHTML = list.map(c => `
+    <div class="customer-card" onclick="openCustomer('${c.id}')">
+      <div class="customer-avatar">${getInitials(c.name)}</div>
       <div class="customer-info">
-        <div class="customer-avatar">${getInitials(customer.name)}</div>
-        <div class="customer-details">
-          <h3>${customer.name}</h3>
-          <span class="customer-id">${customer.id}</span>
-        </div>
+        <div class="customer-name">${c.name}</div>
+        <div class="customer-id">${c.id}</div>
       </div>
-      <span class="customer-status ${customer.status}">${getStatusLabel(customer.status)}</span>
+      <span class="customer-status ${c.status}">${statusLabels[c.status]}</span>
     </div>
   `).join('');
 }
 
-// Get customer initials
 function getInitials(name) {
-  return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+  return name.split(' ').map(n => n[0]).join('').substring(0, 2);
 }
 
-// Get status label in Czech
-function getStatusLabel(status) {
-  const labels = {
-    active: 'Aktivní',
-    inactive: 'Neaktivní',
-    pending: 'Čeká'
-  };
-  return labels[status] || status;
-}
-
-// Select a customer
-function selectCustomer(customerId) {
-  const customer = state.customers.find(c => c.id === customerId);
+function openCustomer(id) {
+  const customer = customers.find(c => c.id === id);
   if (!customer) return;
 
   state.selectedCustomer = customer;
-  renderCustomerList(state.customers);
-  renderSelectedCustomer(customer);
+  resetCallUI();
+
+  document.getElementById('overlayAvatar').textContent = getInitials(customer.name);
+  document.getElementById('overlayName').textContent = customer.name;
+  document.getElementById('overlayId').textContent = customer.id;
+  document.getElementById('overlayNotes').textContent = customer.notes || '';
+
+  document.getElementById('callOverlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
 }
 
-// Render selected customer panel
-function renderSelectedCustomer(customer) {
-  elements.noSelectionPanel.style.display = 'none';
-  elements.selectedCustomerPanel.style.display = 'block';
-
-  document.getElementById('selectedAvatar').textContent = getInitials(customer.name);
-  document.getElementById('selectedName').textContent = customer.name;
-  document.getElementById('selectedId').textContent = customer.id;
-  document.getElementById('customerNotes').textContent = customer.notes || 'Žádné poznámky';
-  document.getElementById('notesSection').style.display = 'block';
-
-  // Reset call UI
-  elements.callButton.className = 'call-button initiate';
-  elements.callButton.innerHTML = '<span>📞</span> Zavolat zákazníkovi';
-  elements.callButton.disabled = false;
-  elements.callStatus.style.display = 'none';
-  elements.callTimer.style.display = 'none';
+function closeOverlay() {
+  if (state.currentCall) {
+    if (!confirm('Probíhá hovor. Opravdu zavřít?')) return;
+    endCall();
+  }
+  document.getElementById('callOverlay').classList.remove('active');
+  document.body.style.overflow = '';
+  state.selectedCustomer = null;
 }
 
-// Setup event listeners
-function setupEventListeners() {
-  // Search functionality
-  elements.searchInput.addEventListener('input', (e) => {
-    const query = e.target.value.toLowerCase();
-    const filtered = state.customers.filter(c =>
-      c.name.toLowerCase().includes(query) ||
-      c.id.toLowerCase().includes(query)
-    );
-    renderCustomerList(filtered);
-  });
-
-  // Call button
-  elements.callButton.addEventListener('click', handleCallButton);
-}
-
-// Handle call button click
-function handleCallButton() {
+function handleCall() {
   if (state.currentCall) {
     endCall();
   } else {
@@ -205,123 +99,86 @@ function handleCallButton() {
   }
 }
 
-// Initiate call to customer (demo mode)
 function initiateCall() {
-  if (!state.selectedCustomer) {
-    showToast('Vyberte zákazníka', 'warning');
-    return;
-  }
+  if (!state.selectedCustomer) return;
 
-  // Simulate call initiation
-  elements.callButton.disabled = true;
-  elements.callButton.innerHTML = '<span class="spinner"></span> Spojuji...';
+  const btn = document.getElementById('callButton');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner" style="width:20px;height:20px;border-width:2px;"></span>';
 
   setTimeout(() => {
-    const demoCallSid = `DEMO-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
-    state.currentCall = {
-      callSid: demoCallSid,
-      customerId: state.selectedCustomer.id,
-      customerName: state.selectedCustomer.name
-    };
+    state.currentCall = { id: `CALL-${Date.now()}` };
     state.callStartTime = new Date();
 
-    // Update UI for active call
-    elements.callButton.className = 'call-button end';
-    elements.callButton.innerHTML = '<span>📵</span> Ukončit hovor';
-    elements.callButton.disabled = false;
+    btn.className = 'call-button end';
+    btn.innerHTML = '<span>📵</span> UKONČIT';
+    btn.disabled = false;
 
-    // Show call status
-    elements.callStatus.style.display = 'block';
+    document.getElementById('callStatus').style.display = 'block';
     updateCallStatus('ringing', 'Vyzvání...');
+    startTimer();
 
-    // Start call timer
-    startCallTimer();
-
-    // Simulate connection after 2 seconds
     setTimeout(() => {
-      if (state.currentCall) {
-        updateCallStatus('connected', 'Spojeno');
-      }
+      if (state.currentCall) updateCallStatus('connected', 'Spojeno');
     }, 2000);
 
-    showToast('Demo hovor zahájen (pro reálné volání připojte Twilio)', 'success');
-  }, 1000);
+    showToast('Demo hovor zahájen', 'success');
+  }, 800);
 }
 
-// End active call
 function endCall() {
-  if (!state.currentCall) return;
+  stopTimer();
+  updateCallStatus('ended', 'Ukončeno');
+  showToast('Hovor ukončen', 'success');
 
-  stopCallTimer();
-  updateCallStatus('ended', 'Hovor ukončen');
-
-  showToast('Hovor byl ukončen', 'success');
-
-  // Reset after showing ended status
-  setTimeout(() => {
-    resetCallUI();
-  }, 2000);
+  setTimeout(resetCallUI, 1500);
 }
 
-// Update call status display
+function resetCallUI() {
+  state.currentCall = null;
+  state.callStartTime = null;
+  stopTimer();
+
+  const btn = document.getElementById('callButton');
+  btn.className = 'call-button initiate';
+  btn.innerHTML = '<span>📞</span> ZAVOLAT';
+  btn.disabled = false;
+
+  document.getElementById('callStatus').style.display = 'none';
+  document.getElementById('callTimer').textContent = '00:00';
+}
+
 function updateCallStatus(status, text) {
-  const statusValue = document.getElementById('callStatusValue');
-  statusValue.textContent = text;
-  statusValue.className = `call-status-value ${status}`;
+  const el = document.getElementById('callStatusValue');
+  el.textContent = text;
+  el.className = 'call-status-value ' + status;
 }
 
-// Start call timer
-function startCallTimer() {
-  elements.callTimer.style.display = 'block';
-  state.callTimer = setInterval(updateTimer, 1000);
-  updateTimer();
+function startTimer() {
+  updateTimerDisplay();
+  state.callTimer = setInterval(updateTimerDisplay, 1000);
 }
 
-// Stop call timer
-function stopCallTimer() {
+function stopTimer() {
   if (state.callTimer) {
     clearInterval(state.callTimer);
     state.callTimer = null;
   }
 }
 
-// Update timer display
-function updateTimer() {
+function updateTimerDisplay() {
   if (!state.callStartTime) return;
-
-  const elapsed = Math.floor((new Date() - state.callStartTime) / 1000);
-  const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
-  const seconds = (elapsed % 60).toString().padStart(2, '0');
-
-  elements.callTimer.textContent = `${minutes}:${seconds}`;
+  const s = Math.floor((Date.now() - state.callStartTime) / 1000);
+  document.getElementById('callTimer').textContent =
+    `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
 }
 
-// Reset call UI to initial state
-function resetCallUI() {
-  state.currentCall = null;
-  state.callStartTime = null;
-  stopCallTimer();
-
-  elements.callButton.className = 'call-button initiate';
-  elements.callButton.innerHTML = '<span>📞</span> Zavolat zákazníkovi';
-  elements.callButton.disabled = false;
-  elements.callStatus.style.display = 'none';
-  elements.callTimer.style.display = 'none';
-}
-
-// Show toast notification
-function showToast(message, type = 'info') {
+function showToast(msg, type = 'info') {
   const toast = document.createElement('div');
   toast.className = `toast ${type}`;
-  toast.textContent = message;
-
-  elements.toastContainer.appendChild(toast);
-
-  setTimeout(() => {
-    toast.remove();
-  }, 4000);
+  toast.textContent = msg;
+  document.getElementById('toastContainer').appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
 }
 
-// Make functions available globally
-window.selectCustomer = selectCustomer;
+window.openCustomer = openCustomer;
