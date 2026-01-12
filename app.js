@@ -52,11 +52,13 @@ const serviceTypeText = { 'warranty': 'Záruční', 'out-of-warranty': 'Mimozár
 // Init
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('operatorId').textContent = `Operátor č.${currentOperator}`;
+  document.getElementById('menuOperatorId').textContent = `Operátor č.${currentOperator}`;
   document.getElementById('statusDot').classList.add('demo');
   document.getElementById('statusText').textContent = 'Demo';
 
   // Initial render
   applyFilters();
+  updateStats();
 
   // Search
   document.getElementById('searchInput').addEventListener('input', applyFilters);
@@ -76,7 +78,72 @@ document.addEventListener('DOMContentLoaded', () => {
   // Call buttons
   document.getElementById('btnCall').addEventListener('click', startCall);
   document.getElementById('btnEnd').addEventListener('click', endCall);
+
+  // Hamburger menu
+  document.getElementById('hamburgerBtn').addEventListener('click', openMenu);
+  document.getElementById('menuClose').addEventListener('click', closeMenu);
+  document.getElementById('menuOverlay').addEventListener('click', closeMenu);
 });
+
+// Menu functions
+function openMenu() {
+  document.getElementById('sideMenu').classList.add('active');
+  document.getElementById('menuOverlay').classList.add('active');
+  document.getElementById('hamburgerBtn').classList.add('active');
+  updateStats();
+}
+
+function closeMenu() {
+  document.getElementById('sideMenu').classList.remove('active');
+  document.getElementById('menuOverlay').classList.remove('active');
+  document.getElementById('hamburgerBtn').classList.remove('active');
+}
+
+// Calculate stats - only warranty calls count for earnings
+function updateStats() {
+  let warrantyCalls = 0;
+  let warrantyTimeMs = 0;
+  let warrantyCustomers = new Set();
+  let totalCalls = 0;
+  let outOfWarrantyCalls = 0;
+
+  customers.forEach(c => {
+    c.calls.forEach(call => {
+      // Only count calls by current operator
+      if (call.operator === currentOperator && call.connected) {
+        totalCalls++;
+
+        if (c.serviceType === 'warranty') {
+          // Only warranty calls count for earnings
+          warrantyCalls++;
+          warrantyCustomers.add(c.id);
+          // Parse duration MM:SS
+          const parts = call.duration.split(':');
+          const mins = parseInt(parts[0]) || 0;
+          const secs = parseInt(parts[1]) || 0;
+          warrantyTimeMs += (mins * 60 + secs) * 1000;
+        } else {
+          outOfWarrantyCalls++;
+        }
+      }
+    });
+  });
+
+  // Update UI
+  document.getElementById('statWarrantyCalls').textContent = warrantyCalls;
+  document.getElementById('statWarrantyTime').textContent = formatDurationLong(warrantyTimeMs);
+  document.getElementById('statWarrantyCustomers').textContent = warrantyCustomers.size;
+  document.getElementById('statTotalCalls').textContent = totalCalls;
+  document.getElementById('statOutOfWarrantyCalls').textContent = outOfWarrantyCalls;
+}
+
+function formatDurationLong(ms) {
+  const totalSecs = Math.floor(ms / 1000);
+  const hrs = Math.floor(totalSecs / 3600);
+  const mins = Math.floor((totalSecs % 3600) / 60);
+  const secs = totalSecs % 60;
+  return `${String(hrs).padStart(2,'0')}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+}
 
 function applyFilters() {
   const query = document.getElementById('searchInput').value.toLowerCase();
@@ -258,8 +325,9 @@ function endCall() {
     // Update history in modal
     renderCallHistory(state.customer);
 
-    // Update list
+    // Update list and stats
     applyFilters();
+    updateStats();
   }
 
   // Update status

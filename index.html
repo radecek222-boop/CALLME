@@ -15,11 +15,65 @@
         <span class="logo-icon">📞</span>
         <span class="logo-text">CALLME</span>
       </div>
-      <div class="status-badge">
-        <span class="status-dot" id="statusDot"></span>
-        <span id="statusText">Online</span>
+      <div class="header-right">
+        <div class="status-badge">
+          <span class="status-dot" id="statusDot"></span>
+          <span id="statusText">Online</span>
+        </div>
+        <button class="hamburger-btn" id="hamburgerBtn">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
       </div>
     </header>
+
+    <!-- Side Menu -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+    <div class="side-menu" id="sideMenu">
+      <div class="menu-header">
+        <span>📊 Statistiky</span>
+        <button class="menu-close" id="menuClose">&times;</button>
+      </div>
+      <div class="menu-content">
+        <div class="operator-info">
+          <div class="operator-title" id="menuOperatorId">Operátor č.1</div>
+        </div>
+
+        <div class="stats-section">
+          <div class="stats-title">Výdělek (pouze záruční)</div>
+          <div class="stats-note">Mimozáruční zakázky se nepočítají</div>
+
+          <div class="stat-card">
+            <div class="stat-value" id="statWarrantyCalls">0</div>
+            <div class="stat-label">Spojených hovorů</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-value" id="statWarrantyTime">00:00:00</div>
+            <div class="stat-label">Celkový čas hovorů</div>
+          </div>
+
+          <div class="stat-card highlight">
+            <div class="stat-value" id="statWarrantyCustomers">0</div>
+            <div class="stat-label">Záručních zákazníků</div>
+          </div>
+        </div>
+
+        <div class="stats-section secondary">
+          <div class="stats-title">Celkové statistiky</div>
+
+          <div class="stat-row">
+            <span>Všechny hovory:</span>
+            <span id="statTotalCalls">0</span>
+          </div>
+          <div class="stat-row">
+            <span>Mimozáruční hovory:</span>
+            <span id="statOutOfWarrantyCalls">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Search & Filters -->
     <div class="search-container">
