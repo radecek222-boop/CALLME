@@ -1,5 +1,5 @@
 /**
- * CALLME - Mobile-First with Call History
+ * CALLME - Mobile-First with Warranty Filter
  * Neon color scheme
  */
 
@@ -14,6 +14,7 @@
   --neon-green: #39ff14;
   --neon-yellow: #ffff00;
   --neon-orange: #ff6600;
+  --neon-purple: #9d4edd;
   --red: #ff3131;
 }
 
@@ -79,10 +80,13 @@ body {
 
 @keyframes pulse { 50% { opacity: 0.5; } }
 
-/* Search */
+/* Search & Filters */
 .search-container {
   padding: 12px 16px;
   background: var(--black-light);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .search-container input {
@@ -102,6 +106,56 @@ body {
 }
 
 .search-container input::placeholder { color: var(--gray); }
+
+/* Filter Row */
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Custom Checkbox */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: var(--gray-light);
+  user-select: none;
+}
+
+.checkbox-label input {
+  display: none;
+}
+
+.checkmark {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--neon-purple);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.checkbox-label input:checked + .checkmark {
+  background: var(--neon-purple);
+  box-shadow: 0 0 10px rgba(157,78,221,0.5);
+}
+
+.checkbox-label input:checked + .checkmark::after {
+  content: "✓";
+  color: var(--white);
+  font-size: 0.7rem;
+  font-weight: bold;
+}
+
+.checkbox-label:hover .checkmark {
+  border-color: var(--neon-pink);
+}
 
 /* Customer List */
 .customer-list {
@@ -161,10 +215,11 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-bottom: 3px;
 }
 
 .customer-id {
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   color: var(--neon-green);
   font-family: monospace;
 }
@@ -190,6 +245,20 @@ body {
   border: 1px solid var(--neon-cyan);
 }
 
+/* Service Type Badge */
+.customer-service {
+  font-size: 0.6rem;
+  font-weight: 500;
+}
+
+.customer-service.warranty {
+  color: var(--neon-green);
+}
+
+.customer-service.out-of-warranty {
+  color: var(--neon-purple);
+}
+
 .customer-status {
   padding: 3px 8px;
   border-radius: 4px;
@@ -202,6 +271,19 @@ body {
 .customer-status.active { border: 1px solid var(--neon-green); color: var(--neon-green); }
 .customer-status.inactive { border: 1px solid var(--red); color: var(--red); }
 .customer-status.pending { border: 1px solid var(--neon-yellow); color: var(--neon-yellow); }
+
+/* No Results */
+.no-results {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--gray);
+}
+
+.no-results-icon {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  opacity: 0.5;
+}
 
 /* Footer */
 .footer {
@@ -287,7 +369,28 @@ body {
 }
 
 .modal-name { font-size: 1.2rem; font-weight: 600; margin-bottom: 2px; }
-.modal-id { font-size: 0.75rem; color: var(--neon-green); font-family: monospace; margin-bottom: 6px; }
+.modal-id { font-size: 0.7rem; color: var(--neon-green); font-family: monospace; margin-bottom: 6px; }
+
+.modal-service-type {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.modal-service-type.warranty {
+  background: rgba(57,255,20,0.1);
+  border: 1px solid var(--neon-green);
+  color: var(--neon-green);
+}
+
+.modal-service-type.out-of-warranty {
+  background: rgba(157,78,221,0.1);
+  border: 1px solid var(--neon-purple);
+  color: var(--neon-purple);
+}
 
 .modal-phone-hidden {
   display: inline-block;
@@ -353,24 +456,11 @@ body {
   margin-bottom: 4px;
 }
 
-.history-status {
-  font-size: 0.7rem;
-}
+.history-status { font-size: 0.7rem; }
 
-.connected-badge {
-  color: var(--neon-green);
-  font-weight: 600;
-}
-
-.missed-badge {
-  color: var(--red);
-  font-weight: 600;
-}
-
-.duration {
-  color: var(--gray-light);
-  margin-left: 6px;
-}
+.connected-badge { color: var(--neon-green); font-weight: 600; }
+.missed-badge { color: var(--red); font-weight: 600; }
+.duration { color: var(--gray-light); margin-left: 6px; }
 
 /* Call Controls */
 .call-controls { margin-bottom: 12px; }

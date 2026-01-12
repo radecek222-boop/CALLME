@@ -21,9 +21,16 @@
       </div>
     </header>
 
-    <!-- Search -->
+    <!-- Search & Filters -->
     <div class="search-container">
       <input type="text" id="searchInput" placeholder="🔍 Hledat zákazníka..." autocomplete="off">
+      <div class="filter-row">
+        <label class="checkbox-label">
+          <input type="checkbox" id="includeOutOfWarranty" checked>
+          <span class="checkmark"></span>
+          <span>Zahrnout mimozáruční servis</span>
+        </label>
+      </div>
     </div>
 
     <!-- Customer List -->
@@ -44,6 +51,7 @@
           <div class="modal-avatar" id="modalAvatar">--</div>
           <div class="modal-name" id="modalName">-</div>
           <div class="modal-id" id="modalId">-</div>
+          <div class="modal-service-type" id="modalServiceType"></div>
           <div class="modal-phone-hidden">🔒 Telefonní číslo skryté</div>
         </div>
 
